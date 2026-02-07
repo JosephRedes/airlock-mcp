@@ -224,7 +224,7 @@ describe("ToolGuard", () => {
                 targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
-                allowedPaths: ["C:\\Users\\test\\project"],
+                allowedPaths: ["/path/to/test/project"],
                 blockDangerousCommands: true,
                 piiRedaction: { enabled: false },
                 logging: { level: "info", destination: "stdout" },
@@ -232,7 +232,7 @@ describe("ToolGuard", () => {
             const guard = new ToolGuard(config, mockLogger);
 
             // This should be blocked - outside allowed path
-            expect(guard.isPathAllowed("C:\\Windows\\System32")).toBe(false);
+            expect(guard.isPathAllowed("/etc/passwd")).toBe(false);
         });
 
         it("should block URL-encoded traversal attempts", () => {
@@ -241,7 +241,7 @@ describe("ToolGuard", () => {
                 targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
-                allowedPaths: ["C:\\Users\\test\\project"],
+                allowedPaths: ["/path/to/test/project"],
                 blockDangerousCommands: true,
                 piiRedaction: { enabled: false },
                 logging: { level: "info", destination: "stdout" },

@@ -73,9 +73,9 @@ Add to `.vscode/mcp.json`:
     "secure-filesystem": {
       "command": "node",
       "args": [
-        "C:\\Users\\josep\\OneDrive\\Documents\\pancake\\dist\\index.js",
+        "/absolute/path/to/airlock-mcp/dist/index.js",
         "--config",
-        "C:\\Users\\josep\\OneDrive\\Documents\\pancake\\airlock.config.json"
+        "/absolute/path/to/airlock-mcp/airlock.config.json"
       ]
     }
   }
