@@ -142,7 +142,6 @@ This project addresses threats documented in the [CSA MCP Security TTPs](https:/
 
 ## Documentation
 
-- **[CODE_GUIDE.md](./CODE_GUIDE.md)** - Detailed explanation of how the code works
 - **[SPECIFICATION.md](./SPECIFICATION.md)** - Full specification including future phases
 - **[THREAT_MAPPING.md](./THREAT_MAPPING.md)** - CSA TTP mapping for security teams
 
