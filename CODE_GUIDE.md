@@ -356,9 +356,9 @@ Add to `.vscode/mcp.json`:
     "secure-filesystem": {
       "command": "node",
       "args": [
-        "C:\\Users\\josep\\OneDrive\\Documents\\pancake\\dist\\index.js",
+        "/path/to/airlock-mcp/dist/index.js",
         "--config",
-        "C:\\Users\\josep\\OneDrive\\Documents\\pancake\\airlock.config.json"
+        "/path/to/airlock-mcp/airlock.config.json"
       ]
     }
   }
@@ -379,7 +379,7 @@ Add to `.vscode/mcp.json`:
   "targetArgs": [          // Arguments for that command
     "-y",
     "@modelcontextprotocol/server-filesystem",
-    "C:\\Users\\yourname\\project"
+    "/absolute/path/to/secure/folder"
   ],
   "allowedTools": [        // SECURITY: Only these tools can be called
     "read_file",
@@ -389,7 +389,7 @@ Add to `.vscode/mcp.json`:
     "mcp://public/"
   ],
   "allowedPaths": [        // SECURITY: Only files in these directories
-    "C:\\Users\\yourname\\project"
+    "/absolute/path/to/secure/folder"
   ],
   "blockDangerousCommands": true,  // SECURITY: Block shell operators
   "logging": {

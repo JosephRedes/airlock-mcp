@@ -3,7 +3,7 @@
     "targetArgs": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "C:\\Users\\josep\\OneDrive\\Documents\\pancake"
+        "/absolute/path/to/secure/folder"
     ],
     "allowedTools": [
         "read_file",

@@ -1,6 +1,6 @@
 # Airlock-MCP
 
-[![CI](https://github.com/yourusername/airlock-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/airlock-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/JosephRedes/airlock-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/JosephRedes/airlock-mcp/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/airlock-mcp.svg)](https://badge.fury.io/js/airlock-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -44,11 +44,11 @@ Example `airlock.config.json`:
   "targetArgs": [
     "-y",
     "@modelcontextprotocol/server-filesystem",
-    "C:\\Users\\yourname\\project"
+    "/absolute/path/to/secure/folder"
   ],
   "allowedTools": ["read_file", "list_directory"],
   "allowedResources": ["mcp://public/"],
-  "allowedPaths": ["C:\\Users\\yourname\\project"],
+  "allowedPaths": ["/absolute/path/to/secure/folder"],
   "blockDangerousCommands": true,
   "logging": {
     "level": "info",

@@ -315,7 +315,7 @@ Allow users to define which server they want to "airlock" via environment variab
   "piiMode": "aggressive",
   "allowedTools": ["query", "read_file", "list_tables"],
   "allowedResources": ["mcp://logs/", "mcp://config/public.json"],
-  "allowedPaths": ["./src", "./data"],
+  "allowedPaths": ["/path/to/project/src", "/path/to/project/data"],
   "logging": {
     "level": "info",
     "destination": "file",
