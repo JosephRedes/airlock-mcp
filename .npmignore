@@ -1,0 +1,24 @@
+# Source files (not needed in published package)
+src/
+tsconfig.json
+
+# Test files
+*.test.ts
+src/test/
+
+# Development files
+.github/
+.gitignore
+.vscode/
+
+# Artifacts
+*.log
+*.tgz
+
+# Documentation (keep README, exclude detailed guides)
+CODE_GUIDE.md
+SPECIFICATION.md
+CHANGELOG.md
+
+# Config example (users create their own)
+airlock.config.json

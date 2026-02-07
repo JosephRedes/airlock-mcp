@@ -1,0 +1,50 @@
+{
+  "name": "airlock-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "airlock-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "tsx src/test/integration.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "security",
+    "proxy",
+    "model-context-protocol",
+    "pii-redaction",
+    "tool-allowlist"
+  ],
+  "author": "",
+  "license": "MIT",
+  "description": "Security-first proxy for Model Context Protocol",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JosephRedes/airlock-mcp"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@redactpii/node": "^1.0.16",
+    "pino": "^9.7.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "targetCommand": "npx",
+    "targetArgs": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\josep\\OneDrive\\Documents\\pancake"
+    ],
+    "allowedTools": [
+        "read_file",
+        "list_directory"
+    ],
+    "logging": {
+        "level": "info",
+        "destination": "stdout"
+    }
+}
