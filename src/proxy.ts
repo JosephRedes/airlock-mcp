@@ -146,9 +146,9 @@ export class AirlockProxy {
             });
 
             // SECURITY: Redact PII from response
-            if (result.content) {
+            if (result.content && Array.isArray(result.content)) {
                 for (const item of result.content) {
-                    if (item.type === "text" && typeof item.text === "string") {
+                    if (item.type === "text" && "text" in item && typeof item.text === "string") {
                         const { redacted } = this.redactor.redact(item.text);
                         item.text = redacted;
                     }
@@ -205,9 +205,9 @@ export class AirlockProxy {
             });
 
             // SECURITY: Redact PII from resource content
-            if (result.contents) {
+            if (result.contents && Array.isArray(result.contents)) {
                 for (const item of result.contents) {
-                    if (typeof item.text === "string") {
+                    if ("text" in item && typeof item.text === "string") {
                         const { redacted } = this.redactor.redact(item.text);
                         item.text = redacted;
                     }

@@ -5,7 +5,6 @@ import {
     ListResourcesRequestSchema,
     ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
 
 /**
  * A simple mock MCP server for testing the Airlock Proxy

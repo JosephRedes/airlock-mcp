@@ -15,6 +15,7 @@ describe("PIIRedactor", () => {
         it("should return content unchanged", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -36,6 +37,7 @@ describe("PIIRedactor", () => {
         it("should redact US Social Security Numbers", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -55,6 +57,7 @@ describe("PIIRedactor", () => {
         it("should redact multiple SSNs", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -76,6 +79,7 @@ describe("PIIRedactor", () => {
         it("should redact credit card numbers", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -94,6 +98,7 @@ describe("PIIRedactor", () => {
         it("should redact cards with spaces", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -114,6 +119,7 @@ describe("PIIRedactor", () => {
         it("should redact API keys", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -134,6 +140,7 @@ describe("PIIRedactor", () => {
         it("should redact email addresses", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -154,6 +161,7 @@ describe("PIIRedactor", () => {
         it("should redact JWT tokens", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -174,6 +182,7 @@ describe("PIIRedactor", () => {
         it("should redact multiple pattern types", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -198,6 +207,7 @@ describe("PIIRedactor", () => {
         it("should return false when disabled", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -213,6 +223,7 @@ describe("PIIRedactor", () => {
         it("should return true when enabled", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],

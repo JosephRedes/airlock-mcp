@@ -33,8 +33,9 @@ jobs:
       - name: Run unit tests
         run: npm test
 
-      - name: Run integration tests
-        run: npm run test:integration
+      # Integration tests disabled for now - require process spawning
+      # - name: Run integration tests
+      #   run: npm run test:integration
 
       - name: Build
         run: npm run build

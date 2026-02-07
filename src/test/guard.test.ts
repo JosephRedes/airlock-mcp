@@ -15,6 +15,7 @@ describe("ToolGuard", () => {
         it("should allow tools in the allowlist", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: ["read_file", "write_file"],
                 allowedResources: [],
                 allowedPaths: [],
@@ -31,6 +32,7 @@ describe("ToolGuard", () => {
         it("should block tools not in the allowlist", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: ["read_file"],
                 allowedResources: [],
                 allowedPaths: [],
@@ -47,6 +49,7 @@ describe("ToolGuard", () => {
         it("should be case-sensitive", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: ["read_file"],
                 allowedResources: [],
                 allowedPaths: [],
@@ -64,6 +67,7 @@ describe("ToolGuard", () => {
         it("should block all tools when allowlist is empty", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -81,6 +85,7 @@ describe("ToolGuard", () => {
         it("should allow resources matching prefix", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: ["mcp://public/", "mcp://logs/"],
                 allowedPaths: [],
@@ -97,6 +102,7 @@ describe("ToolGuard", () => {
         it("should block resources not matching any prefix", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: ["mcp://public/"],
                 allowedPaths: [],
@@ -113,6 +119,7 @@ describe("ToolGuard", () => {
         it("should block all resources when allowlist is empty", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -132,6 +139,7 @@ describe("ToolGuard", () => {
         beforeEach(() => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -178,6 +186,7 @@ describe("ToolGuard", () => {
         it("should allow commands when blocking is disabled", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -195,6 +204,7 @@ describe("ToolGuard", () => {
         it("should allow all paths when allowedPaths is empty (backwards compat)", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: [],
@@ -211,6 +221,7 @@ describe("ToolGuard", () => {
         it("should block paths outside allowed directories", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: ["C:\\Users\\test\\project"],
@@ -227,6 +238,7 @@ describe("ToolGuard", () => {
         it("should block URL-encoded traversal attempts", () => {
             const config: AirlockConfig = {
                 targetCommand: "test",
+                targetArgs: [],
                 allowedTools: [],
                 allowedResources: [],
                 allowedPaths: ["C:\\Users\\test\\project"],

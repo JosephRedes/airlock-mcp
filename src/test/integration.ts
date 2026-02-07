@@ -1,10 +1,5 @@
-import { spawn } from "child_process";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import {
-    ListResourcesRequestSchema,
-    ReadResourceRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
@@ -56,8 +51,8 @@ async function runTest() {
             name: "safe_tool",
             arguments: { input: "hello" },
         });
-        console.log("Result:", JSON.stringify(allowedResult, null, 2));
-        if (allowedResult.content[0].type === "text" && allowedResult.content[0].text.includes("Mock server executed safe_tool")) {
+        const content = allowedResult.content as any[];
+        if (content[0].type === "text" && content[0].text.includes("Mock server executed safe_tool")) {
             console.log("✅ Allowed tool passed through correctly");
         } else {
             throw new Error("❌ Allowed tool failed");
@@ -137,7 +132,8 @@ async function runTest() {
             arguments: {},
         });
         console.log("Result:", JSON.stringify(piiResult, null, 2));
-        const piiText = (piiResult.content[0] as any).text;
+        const piiContent = piiResult.content as any[];
+        const piiText = piiContent[0].text;
         const hasRedactedSSN = piiText.includes("[SSN:REDACTED]");
         const hasRedactedCard = piiText.includes("[CREDIT_CARD:REDACTED]");
         const hasRedactedAPI = piiText.includes("[API_KEY:REDACTED]");
