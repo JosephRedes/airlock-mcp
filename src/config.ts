@@ -34,8 +34,10 @@ export const ConfigSchema = z.object({
 
     /**
      * SECURITY: Allowlist of permitted filesystem paths
-     * Tool arguments containing paths must resolve within one of these directories
-     * Default: empty array (no path restriction - for backwards compatibility)
+     * Tool arguments containing paths must resolve within one of these directories.
+     * Default: empty array means NO path restriction (all paths permitted).
+     * To restrict access, list one or more allowed root directories.
+     * A warning is logged at startup when this is empty.
      */
     allowedPaths: z.array(z.string()).default([]),
 

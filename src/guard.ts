@@ -50,6 +50,13 @@ export class ToolGuard {
             allowedResources: this.allowedResources,
             allowedPaths: this.allowedPaths,
         });
+
+        if (this.allowedPaths.length === 0) {
+            this.logger.warn({
+                msg: "allowedPaths is empty - all filesystem paths are permitted. Set allowedPaths in your config to restrict access.",
+                severity: "high",
+            });
+        }
     }
 
     /**
@@ -195,6 +202,18 @@ export class ToolGuard {
         });
 
         return true;
+    }
+
+    /**
+     * Filter a tool list to only include tools in the allowlist.
+     * If allowedTools is empty, returns an empty list (deny-by-default).
+     *
+     * @param tools - Array of tool objects with at least a `name` field
+     * @returns Filtered array containing only permitted tools
+     */
+    filterToolList<T extends { name: string }>(tools: T[]): T[] {
+        if (this.allowedTools.size === 0) return [];
+        return tools.filter(t => this.allowedTools.has(t.name));
     }
 
     /**

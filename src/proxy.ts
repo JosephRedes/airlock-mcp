@@ -69,14 +69,15 @@ export class AirlockProxy {
      * Security: Each handler validates before forwarding
      */
     private setupHandlers(): void {
-        // List tools: forward from target server
+        // List tools: forward from target server, filtered to allowlist
         this.server.setRequestHandler(ListToolsRequestSchema, async () => {
             if (!this.client) {
                 throw new Error("Target server not connected");
             }
 
             this.logger.debug({ msg: "Forwarding tools/list" });
-            return await this.client.listTools();
+            const result = await this.client.listTools();
+            return { tools: this.guard.filterToolList(result.tools) };
         });
 
         // Call tool: SECURITY INTERCEPTION POINT
@@ -224,21 +225,29 @@ export class AirlockProxy {
     }
 
     /**
-     * Extract path-like arguments from tool arguments
-     * 
-     * Looks for common path-related keys and validates string values
-     * that look like file paths.
+     * Extract path-like arguments from tool arguments.
+     *
+     * Catches paths regardless of argument key name by checking whether the
+     * value itself looks like a filesystem path (absolute or traversal).
+     * Key-name heuristics are kept as an additional signal for relative paths.
      */
     private extractPathArguments(args: Record<string, unknown>): string[] {
         const paths: string[] = [];
         const pathKeyPatterns = /^(path|file|filepath|filename|directory|dir|src|dest|target|source)$/i;
 
+        // Returns true for strings that look like filesystem paths regardless of key name.
+        // Matches Unix absolute (/), home (~), Windows absolute (C:\ or C:/), and traversal (..)
+        const looksLikeAbsolutePath = (v: string): boolean =>
+            v.startsWith("/") ||
+            v.startsWith("~") ||
+            v.startsWith("..") ||
+            /^[A-Za-z]:[/\\]/.test(v);
+
         const extractFromValue = (value: unknown, key?: string): void => {
             if (typeof value === "string") {
-                // Check if key matches path patterns or value looks like a path
-                if (key && pathKeyPatterns.test(key)) {
-                    paths.push(value);
-                } else if (value.includes("/") || value.includes("\\") || value.startsWith(".")) {
+                // Always extract absolute/traversal paths regardless of key name.
+                // Also extract when the key name signals a path argument.
+                if (looksLikeAbsolutePath(value) || (key && pathKeyPatterns.test(key))) {
                     paths.push(value);
                 }
             } else if (Array.isArray(value)) {

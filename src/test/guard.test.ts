@@ -200,6 +200,71 @@ describe("ToolGuard", () => {
         });
     });
 
+    describe("filterToolList", () => {
+        it("should return only allowed tools", () => {
+            const config: AirlockConfig = {
+                targetCommand: "test",
+                targetArgs: [],
+                allowedTools: ["read_file", "list_directory"],
+                allowedResources: [],
+                allowedPaths: [],
+                blockDangerousCommands: true,
+                piiRedaction: { enabled: false },
+                logging: { level: "info", destination: "stdout" },
+            };
+            const guard = new ToolGuard(config, mockLogger);
+
+            const tools = [
+                { name: "read_file", description: "Read a file" },
+                { name: "write_file", description: "Write a file" },
+                { name: "list_directory", description: "List a directory" },
+                { name: "delete_file", description: "Delete a file" },
+            ];
+
+            const filtered = guard.filterToolList(tools);
+            expect(filtered).toHaveLength(2);
+            expect(filtered.map(t => t.name)).toEqual(["read_file", "list_directory"]);
+        });
+
+        it("should return empty list when allowedTools is empty", () => {
+            const config: AirlockConfig = {
+                targetCommand: "test",
+                targetArgs: [],
+                allowedTools: [],
+                allowedResources: [],
+                allowedPaths: [],
+                blockDangerousCommands: true,
+                piiRedaction: { enabled: false },
+                logging: { level: "info", destination: "stdout" },
+            };
+            const guard = new ToolGuard(config, mockLogger);
+
+            const tools = [
+                { name: "read_file", description: "Read a file" },
+                { name: "write_file", description: "Write a file" },
+            ];
+
+            expect(guard.filterToolList(tools)).toHaveLength(0);
+        });
+
+        it("should return empty list when no tools match the allowlist", () => {
+            const config: AirlockConfig = {
+                targetCommand: "test",
+                targetArgs: [],
+                allowedTools: ["read_file"],
+                allowedResources: [],
+                allowedPaths: [],
+                blockDangerousCommands: true,
+                piiRedaction: { enabled: false },
+                logging: { level: "info", destination: "stdout" },
+            };
+            const guard = new ToolGuard(config, mockLogger);
+
+            const tools = [{ name: "delete_file", description: "Delete a file" }];
+            expect(guard.filterToolList(tools)).toHaveLength(0);
+        });
+    });
+
     describe("isPathAllowed", () => {
         it("should allow all paths when allowedPaths is empty (backwards compat)", () => {
             const config: AirlockConfig = {
