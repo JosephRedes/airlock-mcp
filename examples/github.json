@@ -1,0 +1,53 @@
+{
+  "_comment": "GitHub MCP server - read-heavy allowlist, write tools rate-limited tightly",
+  "targetCommand": "npx",
+  "targetArgs": ["-y", "@modelcontextprotocol/server-github"],
+  "targetEnv": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_TOKEN_HERE"
+  },
+
+  "allowedTools": [
+    "get_file_contents",
+    "search_repositories",
+    "search_code",
+    "search_issues",
+    "list_commits",
+    "get_issue",
+    "list_issues",
+    "get_pull_request",
+    "list_pull_requests",
+    "create_issue",
+    "create_pull_request",
+    "create_or_update_file"
+  ],
+  "allowedResources": [],
+  "allowedPaths": [],
+  "blockDangerousCommands": true,
+
+  "rateLimiting": {
+    "enabled": true,
+    "windowMs": 60000,
+    "maxRequests": 100,
+    "perTool": {
+      "create_issue": { "maxRequests": 5 },
+      "create_pull_request": { "maxRequests": 3 },
+      "create_or_update_file": { "maxRequests": 10 }
+    }
+  },
+
+  "sizeLimits": {
+    "enabled": true,
+    "maxRequestBytes": 524288,
+    "maxResponseBytes": 5242880
+  },
+
+  "piiRedaction": {
+    "enabled": true,
+    "patterns": ["api_key", "password", "private_key", "jwt", "aws_key"]
+  },
+
+  "logging": {
+    "level": "info",
+    "destination": "stdout"
+  }
+}

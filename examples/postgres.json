@@ -1,0 +1,49 @@
+{
+  "_comment": "PostgreSQL read-only access - query tool only, no schema modification",
+  "targetCommand": "npx",
+  "targetArgs": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://user:password@localhost/mydb"],
+
+  "allowedTools": [
+    "query"
+  ],
+  "allowedResources": [
+    "postgres://"
+  ],
+  "allowedPaths": [],
+  "blockDangerousCommands": true,
+
+  "rateLimiting": {
+    "enabled": true,
+    "windowMs": 60000,
+    "maxRequests": 50,
+    "perTool": {
+      "query": { "maxRequests": 50 }
+    }
+  },
+
+  "sizeLimits": {
+    "enabled": true,
+    "maxRequestBytes": 65536,
+    "maxResponseBytes": 5242880
+  },
+
+  "piiRedaction": {
+    "enabled": true,
+    "patterns": [
+      "ssn",
+      "credit_card",
+      "bank_account",
+      "api_key",
+      "password",
+      "email",
+      "phone",
+      "iban"
+    ]
+  },
+
+  "logging": {
+    "level": "info",
+    "destination": "file",
+    "filePath": "./logs/airlock-postgres.log"
+  }
+}

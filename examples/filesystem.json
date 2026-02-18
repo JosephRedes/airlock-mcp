@@ -1,0 +1,43 @@
+{
+  "_comment": "Secure filesystem access - restrict the AI to one project directory",
+  "targetCommand": "npx",
+  "targetArgs": ["-y", "@modelcontextprotocol/server-filesystem", "/home/user/projects"],
+
+  "allowedTools": [
+    "read_file",
+    "write_file",
+    "list_directory",
+    "search_files",
+    "create_directory",
+    "get_file_info"
+  ],
+  "allowedResources": [],
+  "allowedPaths": ["/home/user/projects"],
+  "blockDangerousCommands": true,
+
+  "rateLimiting": {
+    "enabled": true,
+    "windowMs": 60000,
+    "maxRequests": 200,
+    "perTool": {
+      "write_file": { "maxRequests": 30 },
+      "create_directory": { "maxRequests": 10 }
+    }
+  },
+
+  "sizeLimits": {
+    "enabled": true,
+    "maxRequestBytes": 1048576,
+    "maxResponseBytes": 10485760
+  },
+
+  "piiRedaction": {
+    "enabled": true,
+    "patterns": ["api_key", "password", "private_key", "jwt", "connection_string", "aws_key"]
+  },
+
+  "logging": {
+    "level": "info",
+    "destination": "stdout"
+  }
+}
