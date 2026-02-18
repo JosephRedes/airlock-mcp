@@ -17,6 +17,7 @@ import type { Logger } from "./logger.js";
 import type { AirlockConfig } from "./config.js";
 import { ToolGuard } from "./guard.js";
 import { PIIRedactor } from "./redactor.js";
+import { RateLimiter } from "./limiter.js";
 
 /**
  * AirlockProxy: Security-first MCP proxy
@@ -38,6 +39,7 @@ export class AirlockProxy {
     private clientTransport: Transport | null = null;
     private guard: ToolGuard;
     private redactor: PIIRedactor;
+    private limiter: RateLimiter;
     private logger: Logger;
     private config: AirlockConfig;
 
@@ -46,6 +48,7 @@ export class AirlockProxy {
         this.logger = logger;
         this.guard = new ToolGuard(config, logger);
         this.redactor = new PIIRedactor(config, logger);
+        this.limiter = new RateLimiter(config, logger);
 
         // Initialize MCP Server (upstream facing)
         this.server = new Server(
@@ -137,6 +140,28 @@ export class AirlockProxy {
                 }
             }
 
+            // SECURITY CHECK 4: Rate limiting
+            if (this.limiter.isToolRateLimited(toolName)) {
+                return {
+                    content: [{
+                        type: "text" as const,
+                        text: JSON.stringify(this.limiter.getRateLimitError(toolName), null, 2),
+                    }],
+                    isError: true,
+                } satisfies CallToolResult;
+            }
+
+            // SECURITY CHECK 5: Request size
+            if (this.limiter.isRequestTooLarge(toolArgs as Record<string, unknown>)) {
+                return {
+                    content: [{
+                        type: "text" as const,
+                        text: JSON.stringify(this.limiter.getSizeLimitError("request"), null, 2),
+                    }],
+                    isError: true,
+                } satisfies CallToolResult;
+            }
+
             // Tool is allowed, forward to target server
             if (!this.client) {
                 throw new Error("Target server not connected");
@@ -147,6 +172,17 @@ export class AirlockProxy {
                 name: toolName,
                 arguments: request.params.arguments,
             });
+
+            // SECURITY CHECK 6: Response size
+            if (result.content && Array.isArray(result.content) && this.limiter.isResponseTooLarge(result.content)) {
+                return {
+                    content: [{
+                        type: "text" as const,
+                        text: JSON.stringify(this.limiter.getSizeLimitError("response"), null, 2),
+                    }],
+                    isError: true,
+                } satisfies CallToolResult;
+            }
 
             // SECURITY: Redact PII from response
             if (result.content && Array.isArray(result.content)) {

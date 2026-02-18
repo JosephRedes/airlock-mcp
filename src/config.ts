@@ -59,14 +59,47 @@ export const ConfigSchema = z.object({
     piiRedaction: z.object({
         /** Enable PII scanning on responses */
         enabled: z.boolean().default(false),
-        /** 
+        /**
          * Patterns to detect and redact
-         * Available: ssn, credit_card, bank_account, api_key, aws_key, 
+         * Available: ssn, credit_card, bank_account, api_key, aws_key,
          *            password, private_key, jwt, connection_string,
          *            email, phone, ip_address, iban, swift, internal_url
          */
         patterns: z.array(z.string()).optional(),
     }).default({ enabled: false }),
+
+    /**
+     * SECURITY: Rate limiting for tool calls
+     * Sliding-window counters (global + per-tool) reject requests once a
+     * threshold is exceeded. Default: disabled (opt-in).
+     */
+    rateLimiting: z.object({
+        /** Enable rate limiting */
+        enabled: z.boolean().default(false),
+        /** Sliding window duration in milliseconds */
+        windowMs: z.number().int().positive().default(60_000),
+        /** Maximum requests allowed within windowMs (global, across all tools) */
+        maxRequests: z.number().int().positive().default(100),
+        /** Per-tool overrides; omitted tools use the global windowMs/maxRequests */
+        perTool: z.record(z.object({
+            windowMs: z.number().int().positive().optional(),
+            maxRequests: z.number().int().positive().optional(),
+        })).optional(),
+    }).optional(),
+
+    /**
+     * SECURITY: Request and response size limits
+     * Rejects payloads that exceed configured byte thresholds.
+     * Default: disabled (opt-in).
+     */
+    sizeLimits: z.object({
+        /** Enable size limit enforcement */
+        enabled: z.boolean().default(false),
+        /** Maximum allowed request argument size in bytes */
+        maxRequestBytes: z.number().int().positive().default(1_048_576),
+        /** Maximum allowed response content size in bytes */
+        maxResponseBytes: z.number().int().positive().default(10_485_760),
+    }).optional(),
 
     /** Logging configuration */
     logging: z.object({
