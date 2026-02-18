@@ -13,15 +13,15 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import fs from "fs";
 
 // ── ANSI colours ────────────────────────────────────────────────────────────
-const R     = "\x1b[0m";
-const BOLD  = "\x1b[1m";
-const DIM   = "\x1b[2m";
-const RED   = "\x1b[31m";
-const GREEN = "\x1b[32m";
+const R      = "\x1b[0m";
+const BOLD   = "\x1b[1m";
+const DIM    = "\x1b[2m";
+const RED    = "\x1b[31m";
+const GREEN  = "\x1b[32m";
 const YELLOW = "\x1b[33m";
-const CYAN  = "\x1b[36m";
-const LINE  = "─".repeat(64);
-const DLINE = "═".repeat(64);
+const CYAN   = "\x1b[36m";
+const LINE   = "-".repeat(64);
+const DLINE  = "=".repeat(64);
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const p = (s = "") => process.stdout.write(s + "\n");
@@ -64,7 +64,7 @@ async function main() {
         process.exit(1);
     }
 
-    header("AIRLOCK-MCP  —  LIVE THREAT DEMONSTRATION");
+    header("AIRLOCK-MCP  -  LIVE THREAT DEMONSTRATION");
     p(`  ${YELLOW}Connecting to Airlock security proxy...${R}`);
 
     const transport = new StdioClientTransport({
@@ -78,16 +78,16 @@ async function main() {
     );
 
     await client.connect(transport);
-    p(`  ${GREEN}✓ Connected to Airlock${R}`);
+    p(`  ${GREEN}+ Connected to Airlock${R}`);
     await sleep(4000);
 
     // ── THREAT 1: Unauthorized Tool ──────────────────────────────────────────
-    section("THREAT 1 of 3  —  Unauthorized Tool Execution");
-    p(`  ${BOLD}${RED}⚠  ATTACK${R}    Calling execute_command (not in allowlist)`);
+    section("THREAT 1 of 5  -  Unauthorized Tool Execution");
+    p(`  ${BOLD}${RED}!  ATTACK${R}    Calling execute_command (not in allowlist)`);
     p(`  ${DIM}   Scenario: Compromised AI attempts to run arbitrary shell commands${R}`);
     p();
     await sleep(5000);
-    p(`  ${DIM}→  Sending malicious request to Airlock...${R}`);
+    p(`  ${DIM}->  Sending malicious request to Airlock...${R}`);
     await sleep(2000);
 
     const r1 = await client.callTool({
@@ -97,17 +97,17 @@ async function main() {
 
     const e1 = parseError(r1.content as unknown[]);
     p();
-    p(`  ${BOLD}${GREEN}✓  BLOCKED${R}    ${e1.message}`);
+    p(`  ${BOLD}${GREEN}+  BLOCKED${R}    ${e1.message}`);
     p(`  ${DIM}   Reason: ${e1.type}${R}`);
     await sleep(7000);
 
     // ── THREAT 2: Command Injection ──────────────────────────────────────────
-    section("THREAT 2 of 3  —  Command Injection via Tool Arguments");
-    p(`  ${BOLD}${RED}⚠  ATTACK${R}    Injecting "&& rm -rf /" into read_file path argument`);
+    section("THREAT 2 of 5  -  Command Injection via Tool Arguments");
+    p(`  ${BOLD}${RED}!  ATTACK${R}    Injecting "&& rm -rf /" into read_file path argument`);
     p(`  ${DIM}   Scenario: Prompt injection triggers destructive shell command chain${R}`);
     p();
     await sleep(5000);
-    p(`  ${DIM}→  Sending injected request to Airlock...${R}`);
+    p(`  ${DIM}->  Sending injected request to Airlock...${R}`);
     await sleep(2000);
 
     const r2 = await client.callTool({
@@ -117,52 +117,102 @@ async function main() {
 
     const e2 = parseError(r2.content as unknown[]);
     p();
-    p(`  ${BOLD}${GREEN}✓  BLOCKED${R}    ${e2.message}`);
+    p(`  ${BOLD}${GREEN}+  BLOCKED${R}    ${e2.message}`);
     p(`  ${DIM}   Reason: ${e2.type}${R}`);
     await sleep(7000);
 
-    // ── THREAT 3: PII Exfiltration ───────────────────────────────────────────
-    section("THREAT 3 of 3  —  PII Exfiltration via Response");
-    p(`  ${BOLD}${RED}⚠  ATTACK${R}    AI reads HR file containing sensitive employee data`);
-    p(`  ${DIM}   Scenario: Target server exposes SSN, API key, and email in response${R}`);
+    // ── THREAT 3: Path Traversal ─────────────────────────────────────────────
+    section("THREAT 3 of 5  -  Path Traversal Attack");
+    p(`  ${BOLD}${RED}!  ATTACK${R}    read_file with path ../../../etc/passwd`);
+    p(`  ${DIM}   Scenario: AI escapes the allowed directory to read system files${R}`);
     p();
     await sleep(5000);
-    p(`  ${DIM}→  Sending request to Airlock...${R}`);
+    p(`  ${DIM}->  Sending traversal request to Airlock...${R}`);
     await sleep(2000);
-    p(`  ${DIM}→  Target server returned raw sensitive data...${R}`);
-    await sleep(2000);
-    p(`  ${DIM}→  Airlock scanning response for PII patterns...${R}`);
-    await sleep(2500);
 
     const r3 = await client.callTool({
         name: "read_file",
-        arguments: { path: "/hr/employees.txt" },
+        arguments: { path: "../../../etc/passwd" },
     });
 
-    const responseText = (r3.content as Array<{ type: string; text: string }>)[0]?.text ?? "";
+    const e3 = parseError(r3.content as unknown[]);
+    p();
+    p(`  ${BOLD}${GREEN}+  BLOCKED${R}    ${e3.message}`);
+    p(`  ${DIM}   Reason: ${e3.type}${R}`);
+    p(`  ${DIM}   Allowed path: ./demo   Attempted: ../../../etc/passwd${R}`);
+    await sleep(7000);
+
+    // ── THREAT 4: Rate Limiting ──────────────────────────────────────────────
+    section("THREAT 4 of 5  -  Runaway Agent / Rate Limit Abuse");
+    p(`  ${BOLD}${RED}!  ATTACK${R}    Calling list_files repeatedly in rapid succession`);
+    p(`  ${DIM}   Scenario: Runaway or hijacked agent hammers the downstream server${R}`);
+    p();
+    await sleep(5000);
+    p(`  ${DIM}->  Sending rapid-fire requests to Airlock...${R}`);
+    await sleep(1000);
+
+    for (let i = 1; i <= 3; i++) {
+        await client.callTool({ name: "list_files", arguments: { directory: "./demo" } });
+        p(`  ${DIM}   Call ${i}... ${GREEN}allowed${R}`);
+        await sleep(400);
+    }
+
+    const r4 = await client.callTool({
+        name: "list_files",
+        arguments: { directory: "./demo" },
+    });
+
+    const e4 = parseError(r4.content as unknown[]);
+    p(`  ${DIM}   Call 4... ${R}${BOLD}${GREEN}+  BLOCKED${R}    ${e4.message}`);
+    p(`  ${DIM}   Reason: ${e4.type}  (limit: 3 per 60s for list_files)${R}`);
+    await sleep(7000);
+
+    // ── THREAT 5: PII Exfiltration ───────────────────────────────────────────
+    section("THREAT 5 of 5  -  PII Exfiltration via Response");
+    p(`  ${BOLD}${RED}!  ATTACK${R}    AI reads HR file containing sensitive employee data`);
+    p(`  ${DIM}   Scenario: Target server exposes SSN, API key, and email in response${R}`);
+    p();
+    await sleep(5000);
+    p(`  ${DIM}->  Sending request to Airlock...${R}`);
+    await sleep(2000);
+    p(`  ${DIM}->  Target server returned raw sensitive data...${R}`);
+    await sleep(2000);
+    p(`  ${DIM}->  Airlock scanning response for PII patterns...${R}`);
+    await sleep(2500);
+
+    const r5 = await client.callTool({
+        name: "read_file",
+        arguments: { path: "./demo/employees.txt" },
+    });
+
+    const responseText = (r5.content as Array<{ type: string; text: string }>)[0]?.text ?? "";
     const ssnRedacted   = responseText.includes("[SSN:REDACTED]");
     const apiRedacted   = responseText.includes("[API_KEY:REDACTED]");
     const emailRedacted = responseText.includes("[EMAIL:REDACTED]");
 
     p();
-    p(`  ${BOLD}${GREEN}✓  REDACTED${R}   Airlock stripped PII before it reached the AI`);
+    p(`  ${BOLD}${GREEN}+  REDACTED${R}   Airlock stripped PII before it reached the AI`);
     p();
-    p(`  ${DIM}   Field     Before (raw)                         After (sanitized)${R}`);
+    p(`  ${DIM}   Field      Before (raw)                          After (sanitized)${R}`);
     p(`  ${LINE.slice(0, 60)}`);
-    p(`  ${DIM}   SSN    ${R}  ${RED}123-45-6789${R}                          ${GREEN}${ssnRedacted ? "[SSN:REDACTED]" : "not redacted"}${R}`);
-    p(`  ${DIM}   API Key${R}  ${RED}sk-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5${R}  ${GREEN}${apiRedacted ? "[API_KEY:REDACTED]" : "not redacted"}${R}`);
-    p(`  ${DIM}   Email  ${R}  ${RED}john.smith@corp.com${R}                  ${GREEN}${emailRedacted ? "[EMAIL:REDACTED]" : "not redacted"}${R}`);
+    p(`  ${DIM}   SSN     ${R}  ${RED}123-45-6789${R}                           ${GREEN}${ssnRedacted ? "[SSN:REDACTED]" : "not redacted"}${R}`);
+    p(`  ${DIM}   API Key ${R}  ${RED}sk-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5${R}   ${GREEN}${apiRedacted ? "[API_KEY:REDACTED]" : "not redacted"}${R}`);
+    p(`  ${DIM}   Email   ${R}  ${RED}john.smith@corp.com${R}                   ${GREEN}${emailRedacted ? "[EMAIL:REDACTED]" : "not redacted"}${R}`);
 
     await sleep(6000);
 
     // ── Summary ──────────────────────────────────────────────────────────────
     p(); p(`${BOLD}${CYAN}${DLINE}${R}`);
-    p(`${BOLD}${CYAN}  DEMO COMPLETE  —  All 3 Threats Controlled by Airlock${R}`);
+    p(`${BOLD}${CYAN}  DEMO COMPLETE  -  All 5 Threats Controlled by Airlock${R}`);
     p(`${BOLD}${CYAN}${DLINE}${R}`); p();
-    p(`  ${BOLD}Active controls:${R}`);
-    p(`    ${GREEN}✓${R}  Tool allowlist enforcement    ${DIM}allowedTools in config${R}`);
-    p(`    ${GREEN}✓${R}  Command injection detection   ${DIM}blockDangerousCommands in config${R}`);
-    p(`    ${GREEN}✓${R}  PII redaction on responses    ${DIM}piiRedaction in config${R}`);
+    p(`  ${BOLD}Active security controls (7 layers):${R}`);
+    p(`    ${GREEN}+${R}  Tool allowlist          ${DIM}allowedTools${R}`);
+    p(`    ${GREEN}+${R}  Command injection block  ${DIM}blockDangerousCommands${R}`);
+    p(`    ${GREEN}+${R}  Path scoping             ${DIM}allowedPaths${R}`);
+    p(`    ${GREEN}+${R}  Rate limiting            ${DIM}rateLimiting${R}`);
+    p(`    ${GREEN}+${R}  Request size limits      ${DIM}sizeLimits.maxRequestBytes${R}`);
+    p(`    ${GREEN}+${R}  Response size limits     ${DIM}sizeLimits.maxResponseBytes${R}`);
+    p(`    ${GREEN}+${R}  PII redaction            ${DIM}piiRedaction${R}`);
     p();
 
     await client.close();

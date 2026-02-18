@@ -3,8 +3,21 @@
   "targetArgs": ["dist/demo/mock-target.js"],
   "allowedTools": ["read_file", "list_files"],
   "allowedResources": [],
-  "allowedPaths": [],
+  "allowedPaths": ["./demo"],
   "blockDangerousCommands": true,
+  "rateLimiting": {
+    "enabled": true,
+    "windowMs": 60000,
+    "maxRequests": 20,
+    "perTool": {
+      "list_files": { "windowMs": 60000, "maxRequests": 3 }
+    }
+  },
+  "sizeLimits": {
+    "enabled": true,
+    "maxRequestBytes": 1048576,
+    "maxResponseBytes": 10485760
+  },
   "piiRedaction": {
     "enabled": true,
     "patterns": ["ssn", "api_key", "email"]
