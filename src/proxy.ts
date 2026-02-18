@@ -2,6 +2,8 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import {
     CallToolRequestSchema,
     ListToolsRequestSchema,
@@ -33,7 +35,7 @@ import { PIIRedactor } from "./redactor.js";
 export class AirlockProxy {
     private server: Server;
     private client: Client | null = null;
-    private clientTransport: StdioClientTransport | null = null;
+    private clientTransport: Transport | null = null;
     private guard: ToolGuard;
     private redactor: PIIRedactor;
     private logger: Logger;
@@ -329,17 +331,26 @@ export class AirlockProxy {
         this.logger.info({ msg: "Starting Airlock-MCP" });
 
         // Phase 1: Connect to target server (downstream)
-        this.logger.info({
-            msg: "Connecting to target server",
-            command: this.config.targetCommand,
-            args: this.config.targetArgs,
-        });
-
-        this.clientTransport = new StdioClientTransport({
-            command: this.config.targetCommand,
-            args: this.config.targetArgs,
-            env: this.config.targetEnv,
-        });
+        if (this.config.targetUrl) {
+            this.logger.info({
+                msg: "Connecting to remote target server",
+                url: this.config.targetUrl,
+            });
+            this.clientTransport = new StreamableHTTPClientTransport(
+                new URL(this.config.targetUrl)
+            );
+        } else {
+            this.logger.info({
+                msg: "Connecting to target server",
+                command: this.config.targetCommand,
+                args: this.config.targetArgs,
+            });
+            this.clientTransport = new StdioClientTransport({
+                command: this.config.targetCommand!,
+                args: this.config.targetArgs,
+                env: this.config.targetEnv,
+            });
+        }
 
         this.client = new Client(
             {

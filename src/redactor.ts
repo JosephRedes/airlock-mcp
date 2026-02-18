@@ -106,6 +106,7 @@ const DEFAULT_PATTERNS = [
     "jwt",
     "connection_string",
     "email",
+    // "swift" omitted: matches too many uppercase English strings; opt in via piiRedaction.patterns
 ] as const;
 
 export type PIIPatternName = keyof typeof PII_PATTERNS;

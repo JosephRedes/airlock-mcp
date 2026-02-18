@@ -9,7 +9,7 @@ import path from "path";
 const DANGEROUS_PATTERNS = [
     /&&/,           // Command chaining
     /\|\s*\w/,      // Pipe to command
-    /;/,            // Command separator
+    /;\s*(?:rm|sudo|curl|wget|chmod|chown|kill|pkill|exec|eval|bash|sh|zsh|python|node|perl|ruby)\b/i, // Semicolon before dangerous command
     /\brm\b/,       // Remove command
     /\bsudo\b/,     // Privilege escalation
     /`.*`/,         // Backtick execution
@@ -298,7 +298,7 @@ export class ToolGuard {
     getBlockedToolError(toolName: string): {
         code: number;
         message: string;
-        data: { type: string; tool: string };
+        data: { type: string };
     } {
         // Security event: Log attempted access to blocked tool
         this.logger.warn({
@@ -313,7 +313,6 @@ export class ToolGuard {
             message: "Security policy violation: Tool not allowed",
             data: {
                 type: "tool_blocked",
-                tool: toolName,
             },
         };
     }

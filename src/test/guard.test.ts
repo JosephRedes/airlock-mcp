@@ -163,8 +163,15 @@ describe("ToolGuard", () => {
             expect(guard.isCommandSafe({ input: "cat file | grep secret" })).toBe(false);
         });
 
-        it("should block semicolons (;)", () => {
+        it("should block semicolons before dangerous commands", () => {
             expect(guard.isCommandSafe({ input: "echo hello; rm file" })).toBe(false);
+            expect(guard.isCommandSafe({ input: "echo hello; rm -rf /" })).toBe(false);
+        });
+
+        it("should allow semicolons in benign content (SQL, prose)", () => {
+            expect(guard.isCommandSafe({ input: "Hello; world" })).toBe(true);
+            expect(guard.isCommandSafe({ input: "SELECT id FROM users; SELECT name FROM users" })).toBe(true);
+            expect(guard.isCommandSafe({ query: "WHERE status = 'active'; ORDER BY id" })).toBe(true);
         });
 
         it("should block rm command", () => {

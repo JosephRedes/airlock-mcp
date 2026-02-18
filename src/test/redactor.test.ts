@@ -203,6 +203,46 @@ describe("PIIRedactor", () => {
         });
     });
 
+    describe("SWIFT code handling", () => {
+        it("should NOT redact SWIFT codes with default patterns", () => {
+            const config: AirlockConfig = {
+                targetCommand: "test",
+                targetArgs: [],
+                allowedTools: [],
+                allowedResources: [],
+                allowedPaths: [],
+                blockDangerousCommands: true,
+                piiRedaction: { enabled: true },
+                logging: { level: "info", destination: "stdout" },
+            };
+            const redactor = new PIIRedactor(config, mockLogger);
+
+            const input = "Bank SWIFT code: DEUTDEDB";
+            const { redacted } = redactor.redact(input);
+
+            expect(redacted).toBe(input);
+        });
+
+        it("should redact SWIFT codes when explicitly opted in", () => {
+            const config: AirlockConfig = {
+                targetCommand: "test",
+                targetArgs: [],
+                allowedTools: [],
+                allowedResources: [],
+                allowedPaths: [],
+                blockDangerousCommands: true,
+                piiRedaction: { enabled: true, patterns: ["swift"] },
+                logging: { level: "info", destination: "stdout" },
+            };
+            const redactor = new PIIRedactor(config, mockLogger);
+
+            const input = "Bank SWIFT code: DEUTDEDB";
+            const { redacted } = redactor.redact(input);
+
+            expect(redacted).toBe("Bank SWIFT code: [SWIFT:REDACTED]");
+        });
+    });
+
     describe("isEnabled", () => {
         it("should return false when disabled", () => {
             const config: AirlockConfig = {

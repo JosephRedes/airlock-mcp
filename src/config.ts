@@ -9,13 +9,16 @@ import { z } from "zod";
  * - Validated at startup, not runtime
  */
 export const ConfigSchema = z.object({
-    /** Command to spawn the target MCP server */
-    targetCommand: z.string().min(1),
+    /** Command to spawn a local target MCP server (mutually exclusive with targetUrl) */
+    targetCommand: z.string().min(1).optional(),
 
-    /** Arguments to pass to the target command */
+    /** URL of a remote HTTP MCP server (mutually exclusive with targetCommand) */
+    targetUrl: z.string().url().optional(),
+
+    /** Arguments to pass to the target command (only used with targetCommand) */
     targetArgs: z.array(z.string()).default([]),
 
-    /** Environment variables for the target server */
+    /** Environment variables for the target server (only used with targetCommand) */
     targetEnv: z.record(z.string()).optional(),
 
     /** 
@@ -71,7 +74,10 @@ export const ConfigSchema = z.object({
         destination: z.enum(["stdout", "file"]).default("stdout"),
         filePath: z.string().optional(),
     }).default({}),
-});
+}).refine(
+    data => Boolean(data.targetCommand) !== Boolean(data.targetUrl),
+    { message: "Exactly one of targetCommand or targetUrl must be set, not both or neither" }
+);
 
 export type AirlockConfig = z.infer<typeof ConfigSchema>;
 
