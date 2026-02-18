@@ -18,7 +18,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "tsx src/test/integration.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "demo:attack": "tsx demo/attacker.ts",
+    "demo:logs": "powershell -NoProfile -ExecutionPolicy Bypass -File demo/watch-logs.ps1"
   },
   "keywords": [
     "mcp",

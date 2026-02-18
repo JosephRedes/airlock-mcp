@@ -1,0 +1,17 @@
+{
+  "targetCommand": "node",
+  "targetArgs": ["dist/demo/mock-target.js"],
+  "allowedTools": ["read_file", "list_files"],
+  "allowedResources": [],
+  "allowedPaths": [],
+  "blockDangerousCommands": true,
+  "piiRedaction": {
+    "enabled": true,
+    "patterns": ["ssn", "api_key", "email"]
+  },
+  "logging": {
+    "level": "info",
+    "destination": "file",
+    "filePath": "demo/airlock.log"
+  }
+}
